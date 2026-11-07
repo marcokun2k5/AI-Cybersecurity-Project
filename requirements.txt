@@ -1,0 +1,12 @@
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+pydantic==2.14.2
+python-dotenv==1.0.1
+langchain
+langchain-community
+langchain-ollama
+ollama
+bleach
+markdown-it-py
+python-multipart
+pandas
