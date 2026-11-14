@@ -1,0 +1,7 @@
+{
+  "id": "benign-001",
+  "log_content": "2026-04-14T09:10:02Z host=web-01 service=nginx event=request method=GET path=/health status=200 src=192.0.2.10\n2026-04-14T09:10:04Z host=web-01 service=nginx event=request method=GET path=/assets/app.css status=200 src=192.0.2.10",
+  "ground_truth_risk": "Low",
+  "ground_truth_attack_type": "None",
+  "is_injected": false
+}

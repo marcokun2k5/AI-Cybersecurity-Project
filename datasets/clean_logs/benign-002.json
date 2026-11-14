@@ -1,0 +1,7 @@
+{
+  "id": "benign-002",
+  "log_content": "2026-04-14T11:02:15Z host=fw-01 action=allow proto=tcp src=192.0.2.44 dst=192.0.2.80 dport=443 bytes=842\n2026-04-14T11:03:18Z host=fw-01 action=allow proto=tcp src=192.0.2.45 dst=192.0.2.80 dport=443 bytes=1204",
+  "ground_truth_risk": "Low",
+  "ground_truth_attack_type": "None",
+  "is_injected": false
+}

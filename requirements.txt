@@ -10,3 +10,4 @@ bleach
 markdown-it-py
 python-multipart
 pandas
+matplotlib

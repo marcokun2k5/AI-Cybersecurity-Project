@@ -1,0 +1,7 @@
+{
+  "id": "port-scan-001",
+  "log_content": "2026-04-14T14:00:01Z firewall action=deny proto=tcp src=203.0.113.77 dst=192.0.2.80 dport=21 flags=SYN\n2026-04-14T14:00:02Z firewall action=deny proto=tcp src=203.0.113.77 dst=192.0.2.80 dport=22 flags=SYN\n2026-04-14T14:00:03Z firewall action=deny proto=tcp src=203.0.113.77 dst=192.0.2.80 dport=23 flags=SYN\n2026-04-14T14:00:04Z firewall action=deny proto=tcp src=203.0.113.77 dst=192.0.2.80 dport=25 flags=SYN\n2026-04-14T14:00:05Z firewall action=deny proto=tcp src=203.0.113.77 dst=192.0.2.80 dport=443 flags=SYN",
+  "ground_truth_risk": "Medium",
+  "ground_truth_attack_type": "Port Scan",
+  "is_injected": false
+}
