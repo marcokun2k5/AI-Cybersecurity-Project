@@ -32,6 +32,7 @@ from app.research_benchmark import (
     BENCHMARK_SEED,
     DEFAULT_DEFENSES,
     DATASET_ROOT,
+    DEFENSE_EFFECTIVENESS_CHART_PATH,
     MANIPULATION_CHART_PATH,
     RESEARCH_REPORT_PATH,
     RESEARCH_CSV_PATH,
@@ -964,6 +965,7 @@ def get_research_results() -> dict[str, object]:
         "charts_available": (
             ACCURACY_CHART_PATH.is_file()
             and MANIPULATION_CHART_PATH.is_file()
+            and DEFENSE_EFFECTIVENESS_CHART_PATH.is_file()
         ),
     }
 
@@ -1053,7 +1055,15 @@ def run_all_research_experiments(
         ) from error
 
     try:
-        return append_full_benchmark(experiments)
+        return append_full_benchmark(
+            experiments,
+            RESEARCH_RESULTS_PATH,
+            RESEARCH_CSV_PATH,
+            RESEARCH_REPORT_PATH,
+            ACCURACY_CHART_PATH,
+            MANIPULATION_CHART_PATH,
+            DEFENSE_EFFECTIVENESS_CHART_PATH,
+        )
     except (OSError, ValueError) as error:
         raise HTTPException(
             status_code=500,
@@ -1127,6 +1137,20 @@ def export_manipulation_chart() -> FileResponse:
         MANIPULATION_CHART_PATH,
         media_type="image/png",
         filename="manipulation_rate_comparison.png",
+    )
+
+
+@app.get("/api/research/export/defense_effectiveness.png")
+def export_defense_effectiveness_chart() -> FileResponse:
+    if not DEFENSE_EFFECTIVENESS_CHART_PATH.is_file():
+        raise HTTPException(
+            status_code=404,
+            detail="No defense-effectiveness chart is available.",
+        )
+    return FileResponse(
+        DEFENSE_EFFECTIVENESS_CHART_PATH,
+        media_type="image/png",
+        filename="defense_effectiveness.png",
     )
 
 

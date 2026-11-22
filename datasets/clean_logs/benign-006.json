@@ -1,0 +1,1 @@
+{"id":"benign-006","log_content":"2026-05-14T21:41:10Z host=proxy-01 event=scheduled-cache-refresh status=success entries=1200 duration_ms=85","ground_truth_risk":"Low","ground_truth_attack_type":"None","is_injected":false}

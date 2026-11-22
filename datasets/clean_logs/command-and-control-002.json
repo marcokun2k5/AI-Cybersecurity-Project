@@ -1,0 +1,1 @@
+{"id":"command-and-control-002","log_content":"2026-05-09T16:36:10Z dns host=ws-41 query=update-api.example.test dst=198.51.100.41 qtype=TXT interval=30s classification=possible-c2","ground_truth_risk":"Medium","ground_truth_attack_type":"Command and Control","is_injected":false}

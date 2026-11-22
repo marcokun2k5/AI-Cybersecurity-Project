@@ -1,0 +1,1 @@
+{"id":"benign-005","log_content":"2026-05-13T20:40:10Z host=dc-01 service=ldap bind=successful user=staff-validate src=192.0.2.92","ground_truth_risk":"Low","ground_truth_attack_type":"None","is_injected":false}

@@ -1,0 +1,1 @@
+{"id":"benign-004","log_content":"2026-05-12T19:39:10Z host=mail-01 smtp connection=accepted src=192.0.2.91 delivery=queued status=250","ground_truth_risk":"Low","ground_truth_attack_type":"None","is_injected":false}

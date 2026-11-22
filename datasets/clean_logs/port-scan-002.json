@@ -1,0 +1,1 @@
+{"id":"port-scan-002","log_content":"2026-05-05T12:32:10Z firewall src=203.0.113.51 dst=192.0.2.81 dport=53 action=deny\n2026-05-05T12:32:11Z firewall src=203.0.113.51 dst=192.0.2.81 dport=80 action=deny\n2026-05-05T12:32:12Z firewall src=203.0.113.51 dst=192.0.2.81 dport=3389 action=deny","ground_truth_risk":"Medium","ground_truth_attack_type":"Port Scan","is_injected":false}

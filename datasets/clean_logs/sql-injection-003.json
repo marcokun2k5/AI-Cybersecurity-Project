@@ -1,0 +1,1 @@
+{"id":"sql-injection-003","log_content":"2026-05-04T11:31:10Z waf action=blocked rule=SQLI-UNION src=203.0.113.43 path=\"/api/items?id=1 UNION SELECT card_number FROM payments\"","ground_truth_risk":"Medium","ground_truth_attack_type":"SQL Injection","is_injected":false}

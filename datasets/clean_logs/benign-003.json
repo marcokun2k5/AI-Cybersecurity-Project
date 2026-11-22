@@ -1,0 +1,1 @@
+{"id":"benign-003","log_content":"2026-05-11T18:38:10Z host=db-01 service=postgresql event=checkpoint status=complete duration_ms=210","ground_truth_risk":"Low","ground_truth_attack_type":"None","is_injected":false}

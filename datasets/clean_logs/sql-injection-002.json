@@ -1,0 +1,1 @@
+{"id":"sql-injection-002","log_content":"2026-05-03T10:30:10Z web method=POST path=/login body=\"user=guest&password=' OR 1=1--\" status=401 src=203.0.113.42","ground_truth_risk":"Medium","ground_truth_attack_type":"SQL Injection","is_injected":false}

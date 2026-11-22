@@ -1,0 +1,1 @@
+{"id":"command-and-control-003","log_content":"2026-05-10T17:37:10Z proxy host=ws-42 dst=198.51.100.42:443 method=POST bytes_out=91200 classification=c2-heartbeat action=blocked","ground_truth_risk":"High","ground_truth_attack_type":"Command and Control","is_injected":false}

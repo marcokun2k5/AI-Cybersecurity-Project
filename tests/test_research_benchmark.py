@@ -37,9 +37,9 @@ class ResearchBenchmarkTests(unittest.TestCase):
         self.combined_samples = load_dataset("combined")
 
     def test_dataset_has_required_labels_and_paired_attack_samples(self):
-        self.assertEqual(len(self.clean_samples), 7)
-        self.assertEqual(len(self.injected_samples), 5)
-        self.assertEqual(len(self.combined_samples), 12)
+        self.assertEqual(len(self.clean_samples), 22)
+        self.assertEqual(len(self.injected_samples), 20)
+        self.assertEqual(len(self.combined_samples), 42)
         self.assertEqual(
             {sample.ground_truth_risk for sample in self.clean_samples},
             {"Low", "Medium", "High"},
@@ -79,6 +79,38 @@ class ResearchBenchmarkTests(unittest.TestCase):
                 not detect_injection_patterns(sample.log_content)
                 for sample in self.clean_samples
             )
+        )
+
+    def test_injection_categories_and_attack_types_are_diverse(self):
+        categories = {
+            sample.injection_category
+            for sample in self.injected_samples
+        }
+        attack_counts = {
+            attack_type: sum(
+                sample.ground_truth_attack_type == attack_type
+                for sample in self.injected_samples
+            )
+            for attack_type in (
+                "Brute Force",
+                "SQL Injection",
+                "Port Scan",
+                "Malware",
+                "Command and Control",
+            )
+        }
+
+        self.assertEqual(
+            categories,
+            {
+                "Direct Prompt Injection",
+                "Indirect Prompt Injection",
+                "Context Manipulation",
+            },
+        )
+        self.assertEqual(
+            set(attack_counts.values()),
+            {4},
         )
 
     def test_context_isolation_wraps_log_and_adds_untrusted_data_policy(self):
@@ -202,6 +234,10 @@ class ResearchBenchmarkTests(unittest.TestCase):
             '{"risk_level":"Cao","attack_type":"Tấn công vét cạn",'
             '"reason":"Nhiều lần đăng nhập thất bại"}'
         )
+        markdown_prediction = parse_prediction(
+            "**Risk:** High\n**Attack Type:** Brute Force\n"
+            "**Reason:** repeated failed login attempts"
+        )
         localized_text_prediction = parse_prediction(
             "Trung bình\nAttack Type: Quét cổng\nNhiều cổng bị dò quét."
         )
@@ -210,6 +246,8 @@ class ResearchBenchmarkTests(unittest.TestCase):
         self.assertEqual(text_prediction.attack_type, "SQL Injection")
         self.assertEqual(json_prediction.risk_level, "High")
         self.assertEqual(json_prediction.attack_type, "Brute Force")
+        self.assertEqual(markdown_prediction.risk_level, "High")
+        self.assertEqual(markdown_prediction.attack_type, "Brute Force")
         self.assertEqual(localized_text_prediction.risk_level, "Medium")
         self.assertEqual(localized_text_prediction.attack_type, "Port Scan")
 
@@ -239,17 +277,17 @@ class ResearchBenchmarkTests(unittest.TestCase):
             predict=accurate_prediction,
         )
 
-        self.assertEqual(result.sample_count, 12)
-        self.assertEqual(result.injected_sample_count, 5)
+        self.assertEqual(result.sample_count, 42)
+        self.assertEqual(result.injected_sample_count, 20)
         self.assertEqual(len(result.results), 5)
         for metrics in result.results:
             self.assertEqual(metrics.accuracy_percent, 100)
             self.assertEqual(metrics.manipulation_rate_percent, 0)
             self.assertEqual(metrics.attack_success_rate_percent, 0)
-            self.assertEqual(metrics.correct_prediction_count, 12)
+            self.assertEqual(metrics.correct_prediction_count, 42)
             self.assertEqual(
                 sum(item.injection_detected for item in metrics.predictions),
-                5,
+                20,
             )
 
     def test_downgraded_risk_and_followed_directive_count_as_manipulation(self):
@@ -370,7 +408,7 @@ class ResearchBenchmarkTests(unittest.TestCase):
             "100.00%",
             "0.00%",
         ])
-        self.assertIn("Number of injected samples: 5", summary)
+        self.assertIn("Number of injected samples: 20", summary)
         self.assertIn("**No Defense**", summary)
         self.assertTrue(stored_json["experiments"])
 
@@ -414,7 +452,7 @@ class ResearchBenchmarkTests(unittest.TestCase):
 
         self.assertEqual(best, "Context Isolation")
         self.assertEqual(worst, "No Defense")
-        self.assertIn("clean `7`, injected `5`", report)
+        self.assertIn("clean `22`, injected `20`", report)
         self.assertIn("| injected_logs | Combined Defenses |", report)
         self.assertIn("Attack Success Rate", report)
 
@@ -465,6 +503,7 @@ class ResearchBenchmarkTests(unittest.TestCase):
                 root / "research_report.md",
                 root / "accuracy_comparison.png",
                 root / "manipulation_rate_comparison.png",
+                root / "defense_effectiveness.png",
             )
             batch = append_full_benchmark(experiments, *outputs)
             result_data = json.loads(outputs[0].read_text(encoding="utf-8"))
@@ -497,7 +536,7 @@ class ResearchBenchmarkTests(unittest.TestCase):
         self.assertEqual(datasets.status_code, 200)
         self.assertEqual(
             datasets.json()["dataset_counts"],
-            {"clean_logs": 7, "injected_logs": 5, "combined": 12},
+            {"clean_logs": 22, "injected_logs": 20, "combined": 42},
         )
 
     def test_research_run_endpoint_uses_model_predictions_and_saves_exports(self):
@@ -573,9 +612,9 @@ class ResearchBenchmarkTests(unittest.TestCase):
                 )
 
         self.assertEqual(response.status_code, 200, response.text)
-        self.assertEqual(response.json()["sample_count"], 5)
+        self.assertEqual(response.json()["sample_count"], 20)
         self.assertEqual(response.json()["results"][0]["defense"], "Context Isolation")
-        self.assertEqual(model_call.call_count, 5)
+        self.assertEqual(model_call.call_count, 20)
         self.assertEqual(history_response.json()["history"]["experiments"][0]["experiment_name"], "API test")
         self.assertEqual(json_export.headers["content-disposition"], 'attachment; filename="results.json"')
         self.assertEqual(csv_export.headers["content-disposition"], 'attachment; filename="results.csv"')
@@ -630,9 +669,10 @@ class ResearchBenchmarkTests(unittest.TestCase):
                 root / "research_report.md",
                 root / "accuracy_comparison.png",
                 root / "manipulation_rate_comparison.png",
+                root / "defense_effectiveness.png",
             )
 
-            def persist_full_run(experiments):
+            def persist_full_run(experiments, *_args):
                 return append_full_benchmark(experiments, *output_paths)
 
             with (
@@ -642,6 +682,7 @@ class ResearchBenchmarkTests(unittest.TestCase):
                 patch("app.main.RESEARCH_SUMMARY_PATH", output_paths[2]),
                 patch("app.main.ACCURACY_CHART_PATH", output_paths[3]),
                 patch("app.main.MANIPULATION_CHART_PATH", output_paths[4]),
+                patch("app.main.DEFENSE_EFFECTIVENESS_CHART_PATH", output_paths[5]),
                 patch(
                     "app.main.generate_research_prediction",
                     side_effect=accurate_prediction,
@@ -664,11 +705,14 @@ class ResearchBenchmarkTests(unittest.TestCase):
                 manipulation_export = self.client.get(
                     "/api/research/export/manipulation_rate_comparison.png"
                 )
+                effectiveness_export = self.client.get(
+                    "/api/research/export/defense_effectiveness.png"
+                )
                 results_response = self.client.get("/api/research/results")
 
         self.assertEqual(response.status_code, 200, response.text)
         payload = response.json()
-        self.assertEqual(model_call.call_count, 60)
+        self.assertEqual(model_call.call_count, 210)
         self.assertEqual(len(payload["runs"]), 2)
         self.assertEqual(
             [run["dataset"] for run in payload["runs"]],
@@ -686,6 +730,8 @@ class ResearchBenchmarkTests(unittest.TestCase):
         self.assertEqual(report_export.status_code, 200)
         self.assertEqual(accuracy_export.content[:8], b"\x89PNG\r\n\x1a\n")
         self.assertEqual(manipulation_export.content[:8], b"\x89PNG\r\n\x1a\n")
+        self.assertEqual(effectiveness_export.status_code, 200)
+        self.assertEqual(effectiveness_export.content[:8], b"\x89PNG\r\n\x1a\n")
         self.assertTrue(results_response.json()["charts_available"])
         self.assertIn(
             "research_report.md",

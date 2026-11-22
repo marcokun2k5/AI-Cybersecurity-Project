@@ -1,0 +1,1 @@
+{"id":"benign-007","log_content":"2026-05-15T22:42:10Z host=worker-01 job=nightly-report status=completed records=8008 duration_ms=1432","ground_truth_risk":"Low","ground_truth_attack_type":"None","is_injected":false}

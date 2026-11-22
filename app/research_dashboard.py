@@ -134,6 +134,7 @@ def research_dashboard() -> str:
       <a class="export-link" data-export href="/api/research/export/report.md" aria-disabled="true">Tải research_report.md</a>
       <a class="export-link" data-export-chart href="/api/research/export/accuracy_comparison.png" aria-disabled="true">Tải biểu đồ độ chính xác</a>
       <a class="export-link" data-export-chart href="/api/research/export/manipulation_rate_comparison.png" aria-disabled="true">Tải biểu đồ tỷ lệ thao túng</a>
+      <a class="export-link" data-export-chart href="/api/research/export/defense_effectiveness.png" aria-disabled="true">Tải biểu đồ hiệu quả phòng vệ</a>
     </div>
     <p id="history-info" class="muted">Đang tải thông tin tập dữ liệu…</p>
   </section>
@@ -421,7 +422,7 @@ def research_dashboard() -> str:
       runButton.disabled = true;
       status.className = "";
       status.textContent =
-        "Đang chạy 10 cấu hình trên hai tập dữ liệu (60 lượt gọi mô hình). " +
+        "Đang chạy 10 cấu hình trên hai tập dữ liệu (210 lượt gọi mô hình). " +
         "Quá trình chạy tuần tự và có thể mất vài phút…";
       try {
         const response = await fetch("/api/research/run-all", {

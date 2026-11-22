@@ -82,8 +82,9 @@ The versioned sample corpus lives in `datasets/clean_logs/` and
 `datasets/injected_logs/`. Each JSON file contains `id`, `log_content`,
 `ground_truth_risk`, and `ground_truth_attack_type`. Injected samples also
 identify their clean counterpart and the embedded attacker instruction. The
-included starter corpus has seven clean baseline samples and five paired
-injected samples. Synthetic addresses use documentation-only IP ranges.
+corpus includes 22 clean baseline samples and 20 injected samples: direct,
+indirect, and context-manipulation prompt injection variants cover the five
+attack types. Synthetic addresses use documentation-only IP ranges.
 `None` is the attack-type label for benign baseline logs.
 
 The **Đánh giá bảo mật AI Agent** page at `/research` can run one or more
@@ -102,13 +103,20 @@ available:
 - `GET /api/research/export/report.md` — `research_report.md`
 - `GET /api/research/export/accuracy_comparison.png` and
   `GET /api/research/export/manipulation_rate_comparison.png` — chart exports
+- `GET /api/research/export/defense_effectiveness.png` — defense-effectiveness chart
+
+The latest real Ollama run used `llama3.2`, temperature 0 and seed 0.
+Measured results are stored outside Git under `data/research/`; inspect
+`research_report.md` and `docs/research_report_chapter4.md` for the academic
+summary and `docs/dataset_quality_report.md` for corpus-quality findings.
 
 The **Chạy tất cả thực nghiệm** button runs five defenses against both datasets
-in a fixed order (10 configurations total). The current dataset contains 7 clean
-and 5 injected samples, so a full run makes 60 sequential model calls. On
+in a fixed order (10 configurations total). The current dataset contains 22 clean
+and 20 injected samples, so a full run makes 210 sequential model calls. On
 success it appends both dataset runs to `results.json`, regenerates `results.csv`
-and `research_report.md`, and saves `accuracy_comparison.png` and
-`manipulation_rate_comparison.png` under `data/research/`. The report compares
+and `research_report.md`, and saves `accuracy_comparison.png`,
+`manipulation_rate_comparison.png`, and `defense_effectiveness.png` under
+`data/research/`. The report compares
 both datasets and ranks defenses on the injected dataset by lowest manipulation
 rate, then highest accuracy. The report endpoint and the older
 `/api/research/export/summary.md` endpoint serve the same report file.
