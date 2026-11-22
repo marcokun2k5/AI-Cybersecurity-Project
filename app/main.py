@@ -129,9 +129,21 @@ IP_TOKEN_PATTERN = re.compile(
 FAILED_LOGIN_PATTERNS = (
     re.compile(r"\b(?:failed|unsuccessful)\s+(?:password|login|logon|authentication)\b", re.I),
     re.compile(r"\b(?:login|logon|authentication)\s+(?:failed|failure)\b", re.I),
+    re.compile(r"\blogin_failure\b", re.I),
     re.compile(r"\bauthentication failure\b|\binvalid user\b", re.I),
 )
 SUSPICIOUS_PATTERNS = {
+    "Prompt-injection indicators": re.compile(
+        r"\b(?:ignore|disregard)\b.{0,100}\b(?:previous|prior|instructions|rules)\b"
+        r"|\b(?:ignore|disregard)\s+(?:all\s+)?(?:prior|previous|safety)\s+(?:directions|instructions|rules)\b"
+        r"|\b(?:hidden|developer|system)\s+(?:prompt|message|instruction)\b"
+        r"|\breveal\b.{0,100}\b(?:prompt|credentials|secrets|environment\s+variables)\b"
+        r"|\bsend\s+(?:all\s+)?environment\s+variables\b"
+        r"|\bignore\s+(?:the\s+)?(?:user's|user)\s+question\b"
+        r"|\b(?:call|upload)\b.{0,80}\b(?:every available tool|tools|local database)\b"
+        r"|\bsystem\s+override\b|\bsupersede(?:s)?\s+all\s+(?:other\s+)?rules\b",
+        re.I,
+    ),
     "SQL injection indicators": re.compile(
         r"\bunion\s+select\b|\bor\s+1\s*=\s*1\b|\bselect\b.{0,80}\bfrom\b", re.I
     ),
@@ -1563,11 +1575,6 @@ def generate_report(
             status_code=502,
             detail=error_message(language, "invalid_report"),
         ) from error
-    if not report.summary.strip():
-        raise HTTPException(
-            status_code=502,
-            detail=error_message(language, "invalid_report"),
-        )
     if not enforce_risk:
         return report
 
@@ -1597,12 +1604,14 @@ def generate_report(
 def fallback_threats(indicators: SecurityIndicators, language: str) -> list[str]:
     threat_names = {
         "vi": {
+            "Prompt-injection indicators": "Chỉ báo Prompt Injection",
             "SQL injection indicators": "Tấn công SQL Injection",
             "Path traversal indicators": "Dấu hiệu tấn công duyệt đường dẫn",
             "Command injection indicators": "Dấu hiệu tấn công chèn lệnh",
             "Known scanning-tool indicators": "Dấu hiệu công cụ quét đã biết",
         },
         "en": {
+            "Prompt-injection indicators": "Prompt Injection",
             "SQL injection indicators": "SQL Injection",
             "Path traversal indicators": "Path traversal",
             "Command injection indicators": "Command injection",
