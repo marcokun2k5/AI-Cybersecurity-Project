@@ -24,6 +24,11 @@ testing prompt injection embedded in log contents.
 - Accuracy, manipulation-rate, and attack-success measurements with JSON, CSV,
   and thesis-summary Markdown exports
 - Structured analysis response at `/api/analyze`; uploaded logs are not persisted
+- Rule-based prompt-injection screening reports matching line numbers and tactic
+  categories alongside incident indicators, distinguishing directive-like text
+  from quoted or reported content; prompt-injection indicators are reported
+  separately and do not alone raise operational incident risk. Matches are leads
+  for review, not proof of successful manipulation or a confirmed compromise
 
 ## Setup
 
@@ -48,7 +53,9 @@ uvicorn app.main:app --reload
 Open http://127.0.0.1:8000/ui to upload a log. The API can also be used directly:
 The response includes the filename, model, analysis timestamp, risk level,
 indicators, executive summary, recommendations, and sanitized `report_html`.
-Open http://127.0.0.1:8000/research for the Vietnamese research dashboard.
+The incident-analysis dashboard and AI Agent research benchmark are combined at
+http://127.0.0.1:8000/ui. The research section is embedded below the log-analysis
+workflow; `/research` redirects to that section.
 
 ```powershell
 curl.exe -X POST "http://127.0.0.1:8000/api/analyze" `
@@ -57,8 +64,10 @@ curl.exe -X POST "http://127.0.0.1:8000/api/analyze" `
 ```
 
 The analysis response includes `tom_tat`, `muc_do_rui_ro`, `moi_de_doa`, and
-`khuyen_nghi`, along with file details, indicators, the selected language, and
-sanitized `report_html`.
+`khuyen_nghi`, along with file details, indicators, the selected language,
+prompt-injection match status and line numbers, and sanitized `report_html`.
+Prompt-injection matches use known text patterns and may miss variants or
+flag benign quoted text.
 
 ## Agent security assessment
 
@@ -87,9 +96,9 @@ indirect, and context-manipulation prompt injection variants cover the five
 attack types. Synthetic addresses use documentation-only IP ranges.
 `None` is the attack-type label for benign baseline logs.
 
-The **Đánh giá bảo mật AI Agent** page at `/research` can run one or more
-configurations on the clean, injected, or combined dataset. The API is also
-available:
+The **Đánh giá thực nghiệm bảo mật AI Agent** section in the `/ui` dashboard
+can run one or more configurations on the clean, injected, or combined dataset.
+`/research` redirects to this section. The API is also available:
 
 - `GET /api/research/datasets` — dataset counts and supported labels
 - `POST /api/research/run` — run an experiment; accepts `dataset` (`clean_logs`,

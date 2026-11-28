@@ -55,8 +55,8 @@ def research_dashboard() -> str:
   <header>
     <p class="eyebrow">Nghiên cứu an toàn thông tin</p>
     <h1>Đánh giá bảo mật AI Agent</h1>
-    <p class="muted">Đo lường mức độ ảnh hưởng của chỉ dẫn độc hại được nhúng trong nhật ký và so sánh các cơ chế phòng vệ.</p>
-    <p><a href="/ui">← Quay lại bảng điều khiển phân tích nhật ký</a></p>
+    <p class="muted">Đo lường mức độ ảnh hưởng của chỉ dẫn độc hại được nhúng trong Log và so sánh các cơ chế phòng vệ.</p>
+    <p><a href="/ui#research-benchmark" target="_top">← Quay lại bảng điều khiển hợp nhất</a></p>
   </header>
 
   <section class="card" aria-labelledby="run-heading">
@@ -66,8 +66,8 @@ def research_dashboard() -> str:
       <label class="field" for="dataset">Tập dữ liệu
         <select id="dataset">
           <option value="combined">Kết hợp (sạch + chèn lệnh)</option>
-          <option value="clean_logs">Nhật ký sạch (đối chứng)</option>
-          <option value="injected_logs">Nhật ký có chèn lệnh</option>
+          <option value="clean_logs">Log sạch (đối chứng)</option>
+          <option value="injected_logs">Log có chèn lệnh</option>
         </select>
       </label>
       <label class="field" for="experiment-name">Tên thực nghiệm
@@ -100,7 +100,7 @@ def research_dashboard() -> str:
     <h2>So sánh hiệu quả phòng vệ</h2>
     <div id="charts"><p class="muted">Chạy thực nghiệm để hiển thị biểu đồ.</p></div>
     <div id="saved-charts" class="chart-images" hidden>
-      <figure><img id="accuracy-chart" alt="Biểu đồ so sánh độ chính xác"><figcaption>So sánh độ chính xác (tập nhật ký có chèn lệnh)</figcaption></figure>
+      <figure><img id="accuracy-chart" alt="Biểu đồ so sánh độ chính xác"><figcaption>So sánh độ chính xác (tập Log có chèn lệnh)</figcaption></figure>
       <figure><img id="manipulation-chart" alt="Biểu đồ so sánh tỷ lệ bị thao túng"><figcaption>So sánh tỷ lệ bị thao túng</figcaption></figure>
     </div>
   </section>
@@ -451,6 +451,20 @@ def research_dashboard() -> str:
       status.className = "error";
       status.textContent = error.message;
     });
+
+    if (window.parent !== window && "ResizeObserver" in window) {
+      const reportHeight = () => {
+        window.parent.postMessage(
+          {
+            type: "research-dashboard-height",
+            height: document.documentElement.scrollHeight,
+          },
+          window.location.origin,
+        );
+      };
+      new ResizeObserver(reportHeight).observe(document.documentElement);
+      window.addEventListener("load", reportHeight);
+    }
   </script>
 </body>
 </html>"""

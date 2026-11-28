@@ -524,15 +524,23 @@ class ResearchBenchmarkTests(unittest.TestCase):
         self.assertTrue(all(signature == b"\x89PNG\r\n\x1a\n" for signature in chart_signatures))
 
     def test_research_dashboard_and_dataset_endpoint_are_available(self):
-        page = self.client.get("/research")
+        page = self.client.get("/research", follow_redirects=False)
+        dashboard = self.client.get("/research-panel")
+        combined_page = self.client.get("/ui")
         datasets = self.client.get("/api/research/datasets")
 
-        self.assertEqual(page.status_code, 200)
-        self.assertIn("Đánh giá bảo mật AI Agent", page.text)
-        self.assertIn("Chạy tất cả thực nghiệm", page.text)
-        self.assertIn("Tỷ lệ bị thao túng", page.text)
-        self.assertIn("Tải results.csv", page.text)
-        self.assertIn("Tải research_report.md", page.text)
+        self.assertEqual(page.status_code, 307)
+        self.assertEqual(page.headers["location"], "/ui#research-benchmark")
+        self.assertEqual(dashboard.status_code, 200)
+        self.assertIn("Log sạch (đối chứng)", dashboard.text)
+        self.assertIn("Log có chèn lệnh", dashboard.text)
+        self.assertNotIn("nhật ký", dashboard.text.casefold())
+        self.assertIn("Đánh giá bảo mật AI Agent", dashboard.text)
+        self.assertIn("Chạy tất cả thực nghiệm", dashboard.text)
+        self.assertIn("Tỷ lệ bị thao túng", dashboard.text)
+        self.assertIn("Tải results.csv", dashboard.text)
+        self.assertIn("Tải research_report.md", dashboard.text)
+        self.assertIn('src="/research-panel"', combined_page.text)
         self.assertEqual(datasets.status_code, 200)
         self.assertEqual(
             datasets.json()["dataset_counts"],
